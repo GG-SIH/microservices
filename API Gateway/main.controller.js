@@ -4,14 +4,12 @@ module.exports.userLocatedWithinRadius = async function (req, res) {
   const targetAppUrl = "http://35.221.160.22:30983";
   console.log("body", req.body);
   let currentLocation = req.body.currentLocation;
-  let GETImmediateWaypoints = req.body.iwaypoints;
+  let centerPoint = req.body.iwaypoints;
   let radius = req.body.radius;
-  console.log(GETImmediateWaypoints[0]);
-  let centerPoint = GETImmediateWaypoints[0];
+  let maxRadius = req.body.maxRadius;
   let data = { currentLocation, centerPoint, radius };
   console.log("request data", data);
   let result;
-
   let returnData = {};
   async function fetchDataUserService(requestData) {
     try {
@@ -25,7 +23,7 @@ module.exports.userLocatedWithinRadius = async function (req, res) {
   await fetchDataUserService(data);
   returnData.green = result;
   centerPoint = GETImmediateWaypoints[1];
-  data = { currentLocation, centerPoint, radius };
+  data = { currentLocation, centerPoint, maxRadius };
   await fetchDataUserService(data);
   returnData.yellow = result;
   res.status(200).json(returnData);
