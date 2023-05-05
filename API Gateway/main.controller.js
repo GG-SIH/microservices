@@ -22,7 +22,6 @@ module.exports.userLocatedWithinRadius = async function (req, res) {
   }
   await fetchDataUserService(data);
   returnData.green = result;
-  centerPoint = GETImmediateWaypoints[1];
   data = { currentLocation, centerPoint, maxRadius };
   await fetchDataUserService(data);
   returnData.yellow = result;
