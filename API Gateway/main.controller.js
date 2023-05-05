@@ -1,7 +1,7 @@
 const axios = require("axios");
 
 module.exports.userLocatedWithinRadius = function (req, res) {
-  const targetAppUrl = "http://34.128.70.55:30007/";
+  const targetAppUrl = "http://35.221.160.22:30983";
   console.log("body", req.body);
   let currentLocation = req.body.currentLocation;
   let GETImmediateWaypoints = req.body.iwaypoints;
@@ -11,43 +11,6 @@ module.exports.userLocatedWithinRadius = function (req, res) {
   let requestData = { currentLocation, centerPoint, radius };
   console.log("request data", requestData);
   let result1, result2;
-
-  //method 1
-
-  let options = {
-    method: "POST",
-    timeout: 20000,
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(requestData),
-  };
-
-  fetch(targetAppUrl, options)
-    .then((response) => response.json())
-    .then((data) => console.log(data))
-    .catch((error) => console.error(error));
-
-  //method 2
-
-  async function fetcher() {
-    const res1 = await fetch(targetAppUrl, {
-      method: "POST",
-      timeout: 20000,
-    }).then((response) => {
-      response.json().then((data) => {
-        if (response.status == 200) {
-          console.log("error");
-        } else {
-          console.log(data);
-        }
-      });
-    });
-    console.log("res1", res1);
-  }
-  fetcher();
-
-  //method 3
 
   axios
     .post(targetAppUrl, requestData)
@@ -90,8 +53,8 @@ module.exports.userLocatedWithinRadius = function (req, res) {
   res.status(200).json(returnData);
 };
 
-module.exports.mainController = function (req, res) {
-  const urlDecodeWaypoints = "http://34.101.170.111:3000";
+module.exports.mainController = async function (req, res) {
+  const urlDecodeWaypoints = "http://34.81.63.4:3000";
 
   const urlDynamicRadius = "http://10.20.129.249:30007";
   const urlGenerateWaypoints = "http://10.20.129.249:30007";
@@ -100,17 +63,25 @@ module.exports.mainController = function (req, res) {
   let polyline = req.body.polyline;
   const requestDataForDecodeWaypoints = { polyline };
   console.log(requestDataForDecodeWaypoints);
-  let waypoints, generatedWaypoints, minRadius, immediateWaypoint2;
+  let waypoints = [],
+    generatedWaypoints,
+    minRadius,
+    immediateWaypoint2;
   console.log("in main controller");
 
-  axios
-    .post(urlDecodeWaypoints, requestDataForDecodeWaypoints)
-    .then((response) => {
-      console.log("Response:", response.data);
-    })
-    .catch((error) => {
-      console.error("Error:", error.message);
-    });
+  async function fetchDataDecodeService() {
+    try {
+      const response = await axios.post(
+        urlDecodeWaypoints,
+        requestDataForDecodeWaypoints
+      );
+      console.log("Response", response.data);
+      waypoints = response.data;
+    } catch (error) {
+      console.error("Error", error);
+    }
+  }
+  await fetchDataDecodeService();
 
   // const requestDataForGenerateWaypoints = { decodedPolyline };
   // const requestDataForDynamicRadius = { generatedWaypoints };
@@ -207,6 +178,7 @@ module.exports.mainController = function (req, res) {
   // let maxRadius = minRadius / 2 + minRadius;
 
   let returnData = {};
+  console.log("waypoints 2", waypoints);
   returnData.waypoints = waypoints;
   // returnData.dynamic_radius = minRadius;
   // returnData.immediate_waypoints = immediateWaypoint2;
