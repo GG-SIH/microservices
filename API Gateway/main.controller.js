@@ -1,6 +1,6 @@
 const axios = require("axios");
 
-module.exports.userLocatedWithinRadius = function (req, res) {
+module.exports.userLocatedWithinRadius = async function (req, res) {
   const targetAppUrl = "http://35.221.160.22:30983";
   console.log("body", req.body);
   let currentLocation = req.body.currentLocation;
@@ -8,48 +8,26 @@ module.exports.userLocatedWithinRadius = function (req, res) {
   let radius = req.body.radius;
   console.log(GETImmediateWaypoints[0]);
   let centerPoint = GETImmediateWaypoints[0];
-  let requestData = { currentLocation, centerPoint, radius };
-  console.log("request data", requestData);
-  let result1, result2;
-
-  axios
-    .post(targetAppUrl, requestData)
-    .then((response) => {
-      console.log("Response:", response.data);
-    })
-    .catch((error) => {
-      console.error("Error:", error.message);
-    });
-
-  centerPoint = GETImmediateWaypoints[1];
-  requestData = { currentLocation, centerPoint, radius };
-  options = {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(requestData),
-  };
-
-  // axios
-  //   .post(targetAppUrl, requestData)
-  //   .then((response) => {
-  //     console.log("Response:", response.data);
-  //   })
-  //   .catch((error) => {
-  //     console.error("Error:", error.message);
-  //   });
-
-  // fetch(targetAppUrl, options)
-  //   .then((response) => response.json())
-  //   .then((data) => console.log(data))
-  //   .catch((error) => console.error(error));
+  let data = { currentLocation, centerPoint, radius };
+  console.log("request data", data);
+  let result;
 
   let returnData = {};
-  returnData.message = "userLocatedWithinRadius is called";
-  returnData.green = result1;
-  returnData.yellow = result2;
-
+  async function fetchDataUserService(requestData) {
+    try {
+      const response = await axios.post(targetAppUrl, requestData);
+      console.log("Response", response.data);
+      result = response.data;
+    } catch (error) {
+      console.error("Error", error);
+    }
+  }
+  await fetchDataUserService(data);
+  returnData.green = result;
+  centerPoint = GETImmediateWaypoints[1];
+  data = { currentLocation, centerPoint, radius };
+  await fetchDataUserService(data);
+  returnData.yellow = result;
   res.status(200).json(returnData);
 };
 
