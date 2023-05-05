@@ -61,7 +61,9 @@ module.exports.mainController = async function (req, res) {
   const urlImmdediateWaypoints = "http://34.128.70.55:3000";
 
   let polyline = req.body.polyline;
+
   const requestDataForDecodeWaypoints = { polyline };
+
   console.log(requestDataForDecodeWaypoints);
   let waypoints = [],
     generatedWaypoints,
