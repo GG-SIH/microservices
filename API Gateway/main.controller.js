@@ -56,14 +56,14 @@ module.exports.userLocatedWithinRadius = function (req, res) {
 module.exports.mainController = async function (req, res) {
   const urlDecodeWaypoints = "http://34.81.63.4:3000";
 
-  const urlDynamicRadius = "http://10.20.129.249:30007";
-  const urlGenerateWaypoints = "http://10.20.129.249:30007";
-  const urlImmdediateWaypoints = "http://34.128.70.55:3000";
+  const urlDynamicRadius = "http://104.199.169.100:30000";
+  const urlGenerateWaypoints = "http://34.80.18.232:30000";
+  const urlImmdediateWaypoints = "http://35.201.175.173:3000";
 
   let polyline = req.body.polyline;
   const requestDataForDecodeWaypoints = { polyline };
   console.log(requestDataForDecodeWaypoints);
-  let waypoints = [],
+  let initialWaypoints = [],
     generatedWaypoints,
     minRadius,
     immediateWaypoint2;
@@ -76,12 +76,65 @@ module.exports.mainController = async function (req, res) {
         requestDataForDecodeWaypoints
       );
       console.log("Response", response.data);
-      waypoints = response.data;
+      initialWaypoints = response.data;
     } catch (error) {
       console.error("Error", error);
     }
   }
   await fetchDataDecodeService();
+
+  // generate waypoints
+  const requestDataForGenerateWaypoints = { initialWaypoints}
+  console.log(requestDataForGenerateWaypoints);
+  let waypoints;
+
+  async function fetchDataGenerateService() {
+    try {
+      const response = await axios.post(
+       urlGenerateWaypoints,
+        requestDataForGenerateWaypoints
+      );
+      console.log("Response", response.data);
+      waypoints = response.data;
+    } catch (error) {
+      console.error("Error", error);
+    }
+  }
+  await fetchDataGenerateService();
+
+
+  //dynamic radius
+  const requestDataForDynamicRadius = { waypoints}
+  console.log(requestDataForDynamicRadius);
+  async function fetchDataDynamicService() {
+    try {
+      const response = await axios.post(
+       urlDynamicRadius,
+        requestDataForDynamicRadius
+      );
+      console.log("Response", response.data);
+      minRadius = response.data;
+    } catch (error) {
+      console.error("Error", error);
+    }
+  }
+  await fetchDataDynamicService();
+// immediate waypoints
+const requestDataForImmediateWaypoints = { waypoints}
+  console.log(requestDataForImmediateWaypoints);
+  async function fetchDataImmediateService() {
+    try {
+      const response = await axios.post(
+       urlImmdediateWaypoints,
+        requestDataForImmediateWaypoints
+      );
+      console.log("Response", response.data);
+     immediateWaypoint2 = response.data;
+    } catch (error) {
+      console.error("Error", error);
+    }
+  }
+  await fetchDataImmediateService();
 
   // const requestDataForGenerateWaypoints = { decodedPolyline };
   // const requestDataForDynamicRadius = { generatedWaypoints };
@@ -175,14 +228,14 @@ module.exports.mainController = async function (req, res) {
   //     console.error("Error:", error.message);
   //   });
 
-  // let maxRadius = minRadius / 2 + minRadius;
+   let maxRadius = minRadius / 2 + minRadius;
 
   let returnData = {};
-  console.log("waypoints 2", waypoints);
-  returnData.waypoints = waypoints;
-  // returnData.dynamic_radius = minRadius;
-  // returnData.immediate_waypoints = immediateWaypoint2;
-  // returnData.max_radius = maxRadius;
+  console.log("waypoints 2", initialWaypoints);
+  returnData.initialWaypoints = initialWaypoints;
+  returnData.dynamic_radius = minRadius;
+  returnData.immediate_waypoints = immediateWaypoint2;
+  returnData.max_radius = maxRadius;
 
   res.status(200).json(returnData);
 };
