@@ -1,4 +1,6 @@
 const axios = require("axios");
+var userConfirmation = false;
+var GETCurrentLocation;
 
 module.exports.userLocatedWithinRadius = async function (req, res) {
   const targetAppUrl = "http://35.221.160.22:30983";
@@ -41,9 +43,9 @@ module.exports.mainController = async function (req, res) {
 
   console.log(requestDataForDecodeWaypoints);
   let initialWaypoints = [],
-    generatedWaypoints=[],
+    generatedWaypoints = [],
     minRadius,
-    immediateWaypoint2=[];
+    immediateWaypoint2 = [];
   console.log("in main controller");
 
   async function fetchDataDecodeService() {
@@ -61,14 +63,14 @@ module.exports.mainController = async function (req, res) {
   await fetchDataDecodeService();
 
   // generate waypoints
-  const requestDataForGenerateWaypoints = { initialWaypoints}
+  const requestDataForGenerateWaypoints = { initialWaypoints };
   console.log(requestDataForGenerateWaypoints);
-  let waypoints=[];
+  let waypoints = [];
 
   async function fetchDataGenerateService() {
     try {
       const response = await axios.post(
-       urlGenerateWaypoints,
+        urlGenerateWaypoints,
         requestDataForGenerateWaypoints
       );
       console.log("Response", response.data);
@@ -79,14 +81,13 @@ module.exports.mainController = async function (req, res) {
   }
   await fetchDataGenerateService();
 
-
   //dynamic radius
-  const requestDataForDynamicRadius = { waypoints}
+  const requestDataForDynamicRadius = { waypoints };
   console.log(requestDataForDynamicRadius);
   async function fetchDataDynamicService() {
     try {
       const response = await axios.post(
-       urlDynamicRadius,
+        urlDynamicRadius,
         requestDataForDynamicRadius
       );
       console.log("Response", response.data);
@@ -96,17 +97,17 @@ module.exports.mainController = async function (req, res) {
     }
   }
   await fetchDataDynamicService();
-// immediate waypoints
-const requestDataForImmediateWaypoints = { waypoints}
+  // immediate waypoints
+  const requestDataForImmediateWaypoints = { waypoints };
   console.log(requestDataForImmediateWaypoints);
   async function fetchDataImmediateService() {
     try {
       const response = await axios.post(
-       urlImmdediateWaypoints,
+        urlImmdediateWaypoints,
         requestDataForImmediateWaypoints
       );
       console.log("Response", response.data);
-     immediateWaypoint2 = response.data;
+      immediateWaypoint2 = response.data;
     } catch (error) {
       console.error("Error", error);
     }
@@ -205,7 +206,7 @@ const requestDataForImmediateWaypoints = { waypoints}
   //     console.error("Error:", error.message);
   //   });
 
-   let maxRadius = minRadius / 2 + minRadius;
+  let maxRadius = minRadius / 2 + minRadius;
 
   let returnData = {};
   console.log("waypoints 2", initialWaypoints);
@@ -240,12 +241,12 @@ module.exports.nearestAmbulances = function (req, res) {
 
   res.status(200).json(returnData);
 };
-var userConfirmation = false;
-var GETCurrentLocation;
+
 module.exports.notify = function (req, res) {
   GETCurrentLocation = req.body.currentLocation;
   userConfirmation = true;
   let returnData = {};
+  console.log(GETCurrentLocation);
   returnData.message = "userLocatedWithinRadius is called123";
   returnData.userConfirmation = userConfirmation;
   res.send(userConfirmation);
@@ -254,10 +255,9 @@ module.exports.notify = function (req, res) {
 module.exports.ambulanceReturn = function (req, res) {
   let destination = req.body.destination;
   var axios = require("axios");
-
   var config = {
     method: "get",
-    url: `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${GETCurrentLocation.lat},${GETCurrentLocation.lng}&destinations=${destination.lat},${destination.lng}&key=AIzaSyBcQSmBY1QhFLMcfDHsIFp5YEgdj6I_Ge8`,
+    url: `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${GETCurrentLocation.lat},${GETCurrentLocation.lng}&destinations=${destination.lat},${destination.lng}&key=AIzaSyB8duqmgKujdQzDlmAnJqHA6G_htRlvrgs`,
     headers: {},
   };
 
@@ -267,6 +267,7 @@ module.exports.ambulanceReturn = function (req, res) {
       console.log(
         JSON.stringify(response.data.rows[0].elements[0].duration.text)
       );
+      console.log(response.data);
       let eta = JSON.stringify(response.data.rows[0].elements[0].duration.text);
       let returnData = {};
       returnData.currentLocation = GETCurrentLocation;
