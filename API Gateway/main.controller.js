@@ -31,8 +31,8 @@ module.exports.userLocatedWithinRadius = async function (req, res) {
 module.exports.mainController = async function (req, res) {
   const urlDecodeWaypoints = "http://34.81.63.4:3000";
 
-  const urlDynamicRadius = "http://104.199.169.100:30000";
-  const urlGenerateWaypoints = "http://34.80.18.232:30000";
+  const urlDynamicRadius = "http://104.199.169.100:3000";
+  const urlGenerateWaypoints = "http://34.80.18.232:3000";
   const urlImmdediateWaypoints = "http://35.201.175.173:3000";
 
   let polyline = req.body.polyline;
@@ -41,9 +41,9 @@ module.exports.mainController = async function (req, res) {
 
   console.log(requestDataForDecodeWaypoints);
   let initialWaypoints = [],
-    generatedWaypoints,
+    generatedWaypoints=[],
     minRadius,
-    immediateWaypoint2;
+    immediateWaypoint2=[];
   console.log("in main controller");
 
   async function fetchDataDecodeService() {
@@ -63,7 +63,7 @@ module.exports.mainController = async function (req, res) {
   // generate waypoints
   const requestDataForGenerateWaypoints = { initialWaypoints}
   console.log(requestDataForGenerateWaypoints);
-  let waypoints;
+  let waypoints=[];
 
   async function fetchDataGenerateService() {
     try {
