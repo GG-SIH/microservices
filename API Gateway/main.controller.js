@@ -1,6 +1,7 @@
 const axios = require("axios");
-var userConfirmation = false;
-var GETCurrentLocation;
+let userConfirmation = false;
+let GETCurrentLocation;
+let ETA;
 
 module.exports.userLocatedWithinRadius = async function (req, res) {
   const targetAppUrl = "http://35.221.160.22:30983";
@@ -179,6 +180,7 @@ module.exports.ambulanceReturn = function (req, res) {
       let returnData = {};
       returnData.currentLocation = GETCurrentLocation;
       returnData.ETA = eta;
+      ETA = eta;
       res.status(200).json(returnData);
     })
 
@@ -192,4 +194,8 @@ module.exports.notify2 = function (req, res) {
   returnData.userConfirmation = userConfirmation;
   userConfirmation = false;
   res.status(200).json(returnData);
+};
+
+module.exports.eta = function (req, res) {
+  res.status(200).json(ETA);
 };

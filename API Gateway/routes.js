@@ -17,5 +17,6 @@ router.route("/nearestAmbulance").post(appController.nearestAmbulances);
 router.route("/confirmUser").post(appController.notify);
 router.route("/confirmAmbulance").post(appController.notify2);
 router.route("/ambulanceReturn").post(appController.ambulanceReturn);
+router.route("/eta").get(appController.eta);
 
 module.exports = router;
