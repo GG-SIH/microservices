@@ -4,7 +4,7 @@ let GETCurrentLocation;
 let ETA;
 
 module.exports.userLocatedWithinRadius = async function (req, res) {
-  const targetAppUrl = "http://10.104.0.80:31332";
+  const targetAppUrl = "http://34.146.57.188:30590";
   console.log("body", req.body);
   let currentLocation = req.body.currentLocation;
   let centerPoint = req.body.iwaypoints;
@@ -32,11 +32,11 @@ module.exports.userLocatedWithinRadius = async function (req, res) {
 };
 
 module.exports.mainController = async function (req, res) {
-  const urlDecodeWaypoints = "http://34.92.169.110:3000";
+  const urlDecodeWaypoints = "http://34.85.33.150:3000";
 
-  const urlDynamicRadius = "http://34.92.198.120:3000";
-  const urlGenerateWaypoints = "http://34.92.193.61:3000";
-  const urlImmdediateWaypoints = "http://34.96.219.91:3000";
+  const urlDynamicRadius = "http://34.84.88.92:3000";
+  const urlGenerateWaypoints = "http://34.84.68.184:3000";
+  const urlImmdediateWaypoints = "http://34.146.57.188:3000";
 
   let polyline = req.body.polyline;
 
